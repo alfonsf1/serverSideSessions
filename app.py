@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+from os import kill
 import sys
 import logging.config
 
 import bottle
 from bottle import get, post, request, response, template, redirect
+import requests
+import uuid
 
 
 # Set up app and logging
@@ -27,20 +30,40 @@ if not sys.warnoptions:
 
 @get('/')
 def show_form():
-    count1 = request.get_cookie('count1', default='0')
-    count2 = request.get_cookie('count2', default='0')
+    
+    # session = requests.Session()
+    # response = session.get('http://localhost:5000')
+    sessionID1 = request.cookies.get("count1")
+    sessionID2 = request.cookies.get('count2')
+    print(sessionID1)
+    print(sessionID2)
+    if not sessionID1:
+        sessionID1 = str(uuid.uuid4())
 
-    count1 = int(count1) + 1
+    if not sessionID2:
+        sessionID2 = str(uuid.uuid4())
+
+    print("session1: ",sessionID1)
+    print("session2: ", sessionID2)
+    
+    count1 = request.get_cookie('count1', default=str(sessionID1))
+    count2 = request.get_cookie('count2', default=str(sessionID2))
+    print(count1)
+
+    # count1 = int(count1) + 1
 
     response.set_cookie('count1', str(count1))
 
     return template('counter.tpl', counter1=count1, counter2=count2)
 
-
 @post('/increment')
 def increment_count2():
-    count2 = request.get_cookie('count2', default='0')
-    count2 = int(count2) + 1
+    # session = requests.Session()
+    # response = session.get('http://localhost:5000')
+    #print(response)
+    sessionID = str(uuid.uuid4())
+    count2 = request.get_cookie('count2', default=sessionID)
+    # count2 = int(count2) + 1
     response.set_cookie('count2', str(count2))
 
     return redirect('/')
