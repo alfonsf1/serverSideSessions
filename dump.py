@@ -15,8 +15,3 @@ list_of_keys = resp.json()['keys']
 with shelve.open('./var/kv.dbm') as db:
     for key in list_of_keys:
         print(f'{{\'{key}\': \'{db[key]}\'}}')
-
-
-#commands to run
-# chmod 755 dump.py 
-#./dump.py http://localhost:5100
